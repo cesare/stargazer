@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:18
+    volumes:
+      - postgres-volume:/var/lib/postgresql
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB=stargazer
+    ports:
+      - "5432:5432"
+    restart: always
+
+volumes:
+  postgres-volume:
