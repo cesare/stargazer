@@ -8,17 +8,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateEngine(appState *core.AppState) *gin.Engine {
-	engine := gin.Default()
-
-	engine.Use(cors.New(cors.Config{
-		AllowOrigins: []string{appState.Config.Frontend.BaseUrl},
+func createCorsMiddleware(config *core.Config) gin.HandlerFunc {
+	return cors.New(cors.Config{
+		AllowOrigins: []string{config.Frontend.BaseUrl},
 		AllowMethods: []string{"DELETE", "GET", "OPTIONS", "POST"},
 		AllowHeaders: []string{
 			"Content-Type",
 		},
 		AllowCredentials: true,
-	}))
+	})
+}
+
+func CreateEngine(appState *core.AppState) *gin.Engine {
+	engine := gin.Default()
+
+	engine.Use(createCorsMiddleware(appState.Config))
 
 	engine.GET("/ping", handlers.PingHandler)
 
