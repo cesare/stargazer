@@ -42,6 +42,10 @@ type ServerConfig struct {
 	Port uint16
 }
 
+func (config *ServerConfig) BindAddress() string {
+	return fmt.Sprintf("%s:%d", config.Bind, config.Port)
+}
+
 type Config struct {
 	App      AppConfig
 	Auth     AuthConfig
