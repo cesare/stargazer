@@ -1,20 +1,48 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"flag"
+	"log/slog"
+	"os"
+	"stargazer/internal/core"
+	"stargazer/internal/server"
 )
 
+type arguments struct {
+	configPath string
+}
+
+func newArguments() *arguments {
+	var configPath string
+	flag.StringVar(&configPath, "config-path", "stargazer-config.toml", "specify path to configuration file")
+	flag.Parse()
+
+	return &arguments{configPath: configPath}
+}
+
+func setupLogger() {
+	opts := slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}
+	handler := slog.NewTextHandler(os.Stdout, &opts)
+	slog.SetDefault(slog.New(handler))
+}
+
 func main() {
-	r := gin.Default()
+	args := newArguments()
+	setupLogger()
 
-	r.GET("/ping", func(c *gin.Context) {
-		// Return JSON response
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	config, err := core.LoadConfig(args.configPath)
+	if err != nil {
+		slog.Error("Failed to load config", "error", err)
+		os.Exit(111)
+	}
+	appState, err := core.CreateAppState(config)
+	if err != nil {
+		slog.Error("Failed to create app state", "error", err)
+		os.Exit(111)
+	}
 
-	r.Run()
+	engine := server.CreateEngine(appState)
+	engine.Run(config.Server.BindAddress())
 }
