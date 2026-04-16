@@ -37,6 +37,10 @@ type DatabaseConfig struct {
 	Url string
 }
 
+type FrontendConfig struct {
+	BaseUrl string `toml:"base_url"`
+}
+
 type ServerConfig struct {
 	Bind string
 	Port uint16
@@ -50,6 +54,7 @@ type Config struct {
 	App      AppConfig
 	Auth     AuthConfig
 	Database DatabaseConfig
+	Frontend FrontendConfig
 	Server   ServerConfig
 }
 
