@@ -8,11 +8,11 @@ import (
 )
 
 type AppState struct {
-	Config Config
+	Config *Config
 	dbpool *pgxpool.Pool
 }
 
-func CreateAppState(config Config) (*AppState, error) {
+func CreateAppState(config *Config) (*AppState, error) {
 	pool, err := pgxpool.New(context.Background(), config.Database.Url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to establish database pool: %s", err.Error())
