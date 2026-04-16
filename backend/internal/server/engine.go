@@ -1,8 +1,8 @@
 package server
 
 import (
-	"net/http"
 	"stargazer/internal/core"
+	"stargazer/internal/handlers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,11 +10,7 @@ import (
 func CreateEngine(appState *core.AppState) *gin.Engine {
 	engine := gin.Default()
 
-	engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	engine.GET("/ping", handlers.PingHandler)
 
 	return engine
 }
