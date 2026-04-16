@@ -22,5 +22,8 @@ func CreateEngine(appState *core.AppState) *gin.Engine {
 
 	engine.GET("/ping", handlers.PingHandler)
 
+	authGroup := engine.Group("/auth")
+	handlers.RegisterAuthHandlers(authGroup, appState)
+
 	return engine
 }
