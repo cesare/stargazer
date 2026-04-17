@@ -31,6 +31,7 @@ type AppConfig struct {
 type AuthConfig struct {
 	ClientId     string `toml:"client_id"`
 	ClientSecret string `toml:"client_secret"`
+	RedirectUri  string `toml:"redirect_uri"`
 }
 
 type DatabaseConfig struct {
