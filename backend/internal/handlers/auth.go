@@ -73,4 +73,10 @@ func RegisterAuthHandlers(group *gin.RouterGroup, appState *core.AppState) {
 }
 
 func handleSuccessCallback(appState *core.AppState, c *gin.Context, code string, savedNonce string) {
+	accessTokenRequest := auth.NewAccessTokenRequest(&appState.Config.Auth)
+	accessTokenResponse, err := accessTokenRequest.Execute(code)
+	if err != nil {
+		c.Status(http.StatusUnauthorized)
+		return
+	}
 }
