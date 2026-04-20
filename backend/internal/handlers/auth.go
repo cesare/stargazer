@@ -7,23 +7,37 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
+
+func createOauth2Config(config *core.AuthConfig) *oauth2.Config {
+	oauth2Config := oauth2.Config{
+		ClientID:     config.ClientId,
+		ClientSecret: config.ClientSecret,
+		RedirectURL:  config.RedirectUri,
+		Scopes: []string{
+			"https://www.googleapis.com/auth/youtube.readonly",
+		},
+		Endpoint: google.Endpoint,
+	}
+	return &oauth2Config
+}
 
 func RegisterAuthHandlers(group *gin.RouterGroup, appState *core.AppState) {
 	const SessionKeyAuthState = "google-auth-state"
-	const SessionKeyAuthNonce = "google-auth-nonce"
 
 	group.POST("", func(c *gin.Context) {
-		generator := auth.NewAuthorizationRequestGenarator(&appState.Config.Auth)
-		authRequest := generator.Generate()
+		state := auth.GenerateState()
+		oauth2Config := createOauth2Config(&appState.Config.Auth)
+		url := oauth2Config.AuthCodeURL(state)
 
 		session := sessions.Default(c)
-		session.Set(SessionKeyAuthState, authRequest.State)
-		session.Set(SessionKeyAuthNonce, authRequest.Nonce)
+		session.Set(SessionKeyAuthState, state)
 		session.Save()
 
 		c.JSON(http.StatusOK, gin.H{
-			"location": authRequest.RequestUrl,
+			"location": url,
 		})
 	})
 
@@ -36,12 +50,10 @@ func RegisterAuthHandlers(group *gin.RouterGroup, appState *core.AppState) {
 
 		session := sessions.Default(c)
 		savedState, stateOk := session.Get(SessionKeyAuthState).(string)
-		savedNonce, nonceOk := session.Get(SessionKeyAuthNonce).(string)
 		session.Delete(SessionKeyAuthState)
-		session.Delete(SessionKeyAuthNonce)
 		session.Save()
 
-		if !(stateOk && nonceOk) {
+		if !stateOk {
 			c.Status(http.StatusUnauthorized)
 			return
 		}
@@ -68,15 +80,19 @@ func RegisterAuthHandlers(group *gin.RouterGroup, appState *core.AppState) {
 			return
 		}
 
-		handleSuccessCallback(appState, c, params.Code, savedNonce)
+		handleSuccessCallback(c, appState, params.Code)
 	})
 }
 
-func handleSuccessCallback(appState *core.AppState, c *gin.Context, code string, savedNonce string) {
-	accessTokenRequest := auth.NewAccessTokenRequest(&appState.Config.Auth)
-	accessTokenResponse, err := accessTokenRequest.Execute(code)
+func handleSuccessCallback(c *gin.Context, appState *core.AppState, code string) {
+	oauth2Config := createOauth2Config(&appState.Config.Auth)
+	token, err := oauth2Config.Exchange(c, code)
 	if err != nil {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+	})
 }
