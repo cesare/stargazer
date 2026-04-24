@@ -26,11 +26,11 @@ jobs:
       - name: Setup Golang
         uses: actions/setup-go@v6
         with:
-          go-version-file: go.mod
+          go-version-file: backend/go.mod
           cache: true
           cache-dependency-path: |
-            **/go.sum
-            **/go.mod
+            backend/go.sum
+            backend/go.mod
       - name: Install Dependencies
         run: go mod download
       - name: Build
