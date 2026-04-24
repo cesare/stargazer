@@ -2,14 +2,23 @@ name: golang-ci
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/**"
   pull_request:
+    branches: ["main"]
+    paths:
+      - "backend/**"
+      - ".github/**"
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Checkout
         uses: actions/checkout@v6
