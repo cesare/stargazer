@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "react-router dev",
     "build": "react-router build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "lint": "eslint app",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@react-router/node": "^7.14.2",
