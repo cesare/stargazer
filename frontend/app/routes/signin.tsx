@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Route } from "./+types/signin";
 
 // eslint-disable-next-line react-refresh/only-export-components, no-empty-pattern
@@ -9,6 +10,40 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function SignIn() {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSignIn = async () => {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/auth", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        setError(errorText || `Error: ${response.status} ${response.statusText}`);
+        return;
+      }
+
+      const data = await response.json();
+      const redirectUrl = data.location;
+
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        setError("No redirect URL provided in response");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to connect to server");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
@@ -17,10 +52,17 @@ export default function SignIn() {
             Sign in to Stargazer
           </h2>
         </div>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+            {error}
+          </div>
+        )}
         <div className="mt-8">
           <button
             type="button"
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            onClick={handleSignIn}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -40,7 +82,7 @@ export default function SignIn() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            Sign in with Google
+            {isLoading ? "Signing in..." : "Sign in with Google"}
           </button>
         </div>
       </div>
