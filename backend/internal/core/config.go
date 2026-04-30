@@ -51,12 +51,17 @@ func (config *ServerConfig) BindAddress() string {
 	return fmt.Sprintf("%s:%d", config.Bind, config.Port)
 }
 
+type YoutubeConfig struct {
+	ApiKey string `toml:"api_key"`
+}
+
 type Config struct {
 	App      AppConfig
 	Auth     AuthConfig
 	Database DatabaseConfig
 	Frontend FrontendConfig
 	Server   ServerConfig
+	Youtube  YoutubeConfig
 }
 
 func LoadConfig(path string) (*Config, error) {
