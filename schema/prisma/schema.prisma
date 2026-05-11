@@ -11,3 +11,12 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Channel {
+  id String @id
+  title String
+  description String
+  thumbnailUrl String @map(name: "thumbnail_url")
+
+  @@map("channels")
+}
