@@ -7,7 +7,7 @@ require (
 	github.com/gin-contrib/sessions v1.1.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/jackc/pgx/v5 v5.10.0
-	github.com/pelletier/go-toml/v2 v2.4.0
+	github.com/pelletier/go-toml/v2 v2.4.1
 	golang.org/x/oauth2 v0.36.0
 	google.golang.org/api v0.286.0
 )
