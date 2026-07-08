@@ -1,4 +1,12 @@
 services:
+  backend:
+    user: nobody
+    build:
+      context: ./backend
+    command: ["./stargazer"]
+    ports:
+      - "3000:3000"
+
   frontend:
     user: node
     build:
