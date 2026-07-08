@@ -28,12 +28,6 @@ type AppConfig struct {
 	SessionKey b64string `toml:"session_key"`
 }
 
-type AuthConfig struct {
-	ClientId     string `toml:"client_id"`
-	ClientSecret string `toml:"client_secret"`
-	RedirectUri  string `toml:"redirect_uri"`
-}
-
 type DatabaseConfig struct {
 	Url string
 }
@@ -57,7 +51,6 @@ type YoutubeConfig struct {
 
 type Config struct {
 	App      AppConfig
-	Auth     AuthConfig
 	Database DatabaseConfig
 	Frontend FrontendConfig
 	Server   ServerConfig
