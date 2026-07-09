@@ -30,6 +30,19 @@ services:
       - "5432:5432"
     restart: always
 
+  schema:
+    user: node
+    build:
+      context: ./schema
+    volumes:
+      - ./schema:/app
+      - schema-node-modules:/app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/stargazer?schema=public
+    depends_on:
+      - postgres
+
 volumes:
   frontend-node-modules:
   postgres-volume:
+  schema-node-modules:
