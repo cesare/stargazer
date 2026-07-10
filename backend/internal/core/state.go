@@ -24,3 +24,12 @@ func CreateAppState(config *Config) (*AppState, error) {
 	}
 	return &state, nil
 }
+
+func (appState *AppState) AcquireDatabaseConnection(ctx context.Context) (*pgxpool.Conn, error) {
+	conn, err := appState.dbpool.Acquire(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to acquire database connection: %s", err)
+	}
+
+	return conn, nil
+}
