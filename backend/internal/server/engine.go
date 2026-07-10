@@ -34,5 +34,8 @@ func CreateEngine(appState *core.AppState) *gin.Engine {
 
 	engine.GET("/ping", handlers.PingHandler)
 
+	channelsGroup := engine.Group("/channels")
+	handlers.RegisterChannelsHandler(channelsGroup, appState)
+
 	return engine
 }
