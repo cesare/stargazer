@@ -49,18 +49,18 @@ func RegisterChannelsHandler(group *gin.RouterGroup, appState *core.AppState) {
 		description := ch.Snippet.Description
 		thumbnailUrl := ch.Snippet.Thumbnails.Default.Url
 
-		conn, err := appState.AcquireDatabaseConnection(c)
+		tx, err := appState.BeginDatabaseTransaction(c)
 		if err != nil {
 			slog.Error("failed to acquire database connection", "error", err)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
-		defer conn.Release()
 
-		repository := repositories.NewChannelRepository(c, conn.Conn())
+		repository := repositories.NewChannelRepository(c, tx.Conn())
 		channel, err := repository.TryFind(id)
 		if err != nil {
 			slog.Error("failed to find existing channel", "error", err, "channelId", id)
+			tx.Rollback(c)
 			c.Status(http.StatusInternalServerError)
 			return
 		}
@@ -69,10 +69,12 @@ func RegisterChannelsHandler(group *gin.RouterGroup, appState *core.AppState) {
 			channel, err = repository.Create(id, title, description, thumbnailUrl)
 			if err != nil {
 				slog.Error("failed to regisgter channel", "error", err, "channelId", id)
+				tx.Rollback(c)
 				c.Status(http.StatusInternalServerError)
 				return
 			}
 		}
+		tx.Commit(c)
 
 		c.JSON(http.StatusCreated, gin.H{
 			"id":           channel.Id,

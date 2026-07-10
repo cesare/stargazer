@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -32,4 +33,13 @@ func (appState *AppState) AcquireDatabaseConnection(ctx context.Context) (*pgxpo
 	}
 
 	return conn, nil
+}
+
+func (appState *AppState) BeginDatabaseTransaction(ctx context.Context) (pgx.Tx, error) {
+	tx, err := appState.dbpool.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin database transaction: %w", err)
+	}
+
+	return tx, nil
 }
