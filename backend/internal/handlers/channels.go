@@ -1,13 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"stargazer/internal/core"
-	"stargazer/internal/repositories"
-	"stargazer/internal/ytclient"
-	"strings"
+	. "stargazer/internal/errors"
+	"stargazer/internal/handlers/channels"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,55 +25,19 @@ func RegisterChannelsHandler(group *gin.RouterGroup, appState *core.AppState) {
 			return
 		}
 
-		url, err := url.ParseRequestURI(params.Url)
+		registration := channels.NewRegistration(appState)
+		channel, err := registration.Execute(c, params.Url)
 		if err != nil {
-			slog.Warn("invalid url", "error", err, "url", url)
-			c.Status(http.StatusBadRequest)
-			return
-		}
+			slog.Error("registration failed", "error", err, "requested-url", params.Url)
 
-		pathElements := strings.Split(url.Path, "/")
-		handle := pathElements[1]
-
-		youtube := ytclient.NewChannelFinder(appState.Config)
-		ch, err := youtube.FindByHandle(c, handle)
-		if err != nil {
-			slog.Error("failed in Youtube API FindByHandle", "error", err, "handle", handle)
-			c.Status(http.StatusBadGateway)
-			return
-		}
-
-		id := ch.Id
-		title := ch.Snippet.Title
-		description := ch.Snippet.Description
-		thumbnailUrl := ch.Snippet.Thumbnails.Default.Url
-
-		tx, err := appState.BeginDatabaseTransaction(c)
-		if err != nil {
-			slog.Error("failed to acquire database connection", "error", err)
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-
-		repository := repositories.NewChannelRepository(c, tx.Conn())
-		channel, err := repository.TryFind(id)
-		if err != nil {
-			slog.Error("failed to find existing channel", "error", err, "channelId", id)
-			tx.Rollback(c)
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-
-		if channel == nil {
-			channel, err = repository.Create(id, title, description, thumbnailUrl)
-			if err != nil {
-				slog.Error("failed to regisgter channel", "error", err, "channelId", id)
-				tx.Rollback(c)
+			var responseError ResponseError
+			if errors.As(err, &responseError) {
+				c.Status(responseError.Status())
+			} else {
 				c.Status(http.StatusInternalServerError)
-				return
 			}
+			return
 		}
-		tx.Commit(c)
 
 		c.JSON(http.StatusCreated, gin.H{
 			"id":           channel.Id,

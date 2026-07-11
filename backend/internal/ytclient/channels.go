@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"stargazer/internal/core"
+	"stargazer/internal/values"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
@@ -44,13 +45,13 @@ func (finder *ChannelFinder) FindById(ctx context.Context, id string) (*youtube.
 	return response.Items[0], nil
 }
 
-func (finder *ChannelFinder) FindByHandle(ctx context.Context, handle string) (*youtube.Channel, error) {
+func (finder *ChannelFinder) FindByHandle(ctx context.Context, handle *values.Handle) (*youtube.Channel, error) {
 	channelsService, err := finder.createService(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	call := channelsService.List([]string{"snippet", "contentDetails"}).ForHandle(handle)
+	call := channelsService.List([]string{"snippet", "contentDetails"}).ForHandle(fmt.Sprint(handle))
 	response, err := call.Do()
 	if err != nil {
 		return nil, fmt.Errorf("channels listing failed: %s", err)
