@@ -24,7 +24,7 @@ func TryNewHandleFromUrl(urlString string) (*Handle, error) {
 
 func TryNewHandle(value string) (*Handle, error) {
 	if !strings.HasPrefix(value, "@") {
-		return nil, fmt.Errorf("handle %s does not starts with @", value)
+		return nil, fmt.Errorf("handle %s does not start with @", value)
 	}
 
 	trimmedValue := strings.TrimSpace(value)
