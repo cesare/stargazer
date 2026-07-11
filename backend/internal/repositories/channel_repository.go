@@ -30,7 +30,7 @@ func (repository *ChannelRepository) Create(id string, title string, description
 	defer rows.Close()
 
 	if !rows.Next() {
-		return nil, fmt.Errorf("inserted cha")
+		return nil, fmt.Errorf("inserted channel missing")
 	}
 
 	var channel models.Channel
