@@ -16,6 +16,10 @@ func TryNewHandleFromUrl(urlString string) (*Handle, error) {
 		return nil, fmt.Errorf("failed to parse URL %s: %w", urlString, err)
 	}
 
+	if parsedUrl.Host != "www.youtube.com" {
+		return nil, fmt.Errorf("%s is not Youtube URL", urlString)
+	}
+
 	pathElements := strings.Split(parsedUrl.Path, "/")
 	handleValue := pathElements[1]
 
