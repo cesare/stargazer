@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
-	"stargazer/internal/models"
+	. "stargazer/internal/models"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -20,7 +20,7 @@ func NewChannelRepository(ctx context.Context, conn *pgx.Conn) *ChannelRepositor
 	}
 }
 
-func (repository *ChannelRepository) Create(id string, title string, description string, thumbnailUrl string) (*models.Channel, error) {
+func (repository *ChannelRepository) Create(id ChannelId, title string, description string, thumbnailUrl string) (*Channel, error) {
 	statement := "insert into channels (id, title, description, thumbnail_url) values ($1, $2, $3, $4) returning id, title, description, thumbnail_url"
 
 	rows, err := repository.connection.Query(repository.ctx, statement, id, title, description, thumbnailUrl)
@@ -33,7 +33,7 @@ func (repository *ChannelRepository) Create(id string, title string, description
 		return nil, fmt.Errorf("inserted channel missing")
 	}
 
-	var channel models.Channel
+	var channel Channel
 	err = rows.Scan(&channel.Id, &channel.Title, &channel.Description, &channel.ThumbnailUrl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to map row into channel struct: %w", err)
@@ -42,7 +42,7 @@ func (repository *ChannelRepository) Create(id string, title string, description
 	return &channel, nil
 }
 
-func (repository *ChannelRepository) TryFind(id string) (*models.Channel, error) {
+func (repository *ChannelRepository) TryFind(id ChannelId) (*Channel, error) {
 	statement := "select id, title, description, thumbnail_url from channels where id = $1"
 	rows, err := repository.connection.Query(repository.ctx, statement, id)
 	if err != nil {
@@ -54,7 +54,7 @@ func (repository *ChannelRepository) TryFind(id string) (*models.Channel, error)
 		return nil, nil
 	}
 
-	var channel models.Channel
+	var channel Channel
 	err = rows.Scan(&channel.Id, &channel.Title, &channel.Description, &channel.ThumbnailUrl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to map result row into channel: %w", err)
