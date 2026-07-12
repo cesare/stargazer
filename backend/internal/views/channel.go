@@ -1,6 +1,9 @@
 package views
 
-import . "stargazer/internal/models"
+import (
+	. "stargazer/internal/models"
+	. "stargazer/internal/values"
+)
 
 type ChannelView struct {
 	Id           ChannelId `json:"id"`

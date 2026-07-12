@@ -1,6 +1,6 @@
 package models
 
-type ChannelId string
+import . "stargazer/internal/values"
 
 type Channel struct {
 	Id           ChannelId `db:"id"`
