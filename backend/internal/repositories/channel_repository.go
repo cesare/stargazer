@@ -63,3 +63,47 @@ func (repository *ChannelRepository) TryFind(id ChannelId) (*Channel, error) {
 
 	return &channel, nil
 }
+
+func (repository *ChannelRepository) List() ([]Channel, error) {
+	statement := "select id, title, description, thumbnail_url from channels order by id"
+	rows, err := repository.connection.Query(repository.ctx, statement)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load channels: %w", err)
+	}
+	defer rows.Close()
+
+	channels := []Channel{}
+	for rows.Next() {
+		var channel Channel
+		err = rows.Scan(&channel.Id, &channel.Title, &channel.Description, &channel.ThumbnailUrl)
+		if err != nil {
+			return nil, fmt.Errorf("failed to map result row into channel: %w", err)
+		}
+
+		channels = append(channels, channel)
+	}
+
+	return channels, nil
+}
+
+func (repository *ChannelRepository) ListTargetChannelIds() ([]ChannelId, error) {
+	statement := "select id from channels order by id"
+	rows, err := repository.connection.Query(repository.ctx, statement)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load channel IDs: %w", err)
+	}
+	defer rows.Close()
+
+	ids := []ChannelId{}
+	for rows.Next() {
+		var id ChannelId
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, fmt.Errorf("failed to map result row into channel id: %w", err)
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
