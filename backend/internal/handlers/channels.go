@@ -7,6 +7,7 @@ import (
 	"stargazer/internal/core"
 	. "stargazer/internal/errors"
 	"stargazer/internal/handlers/channels"
+	"stargazer/internal/views"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,11 +40,7 @@ func RegisterChannelsHandler(group *gin.RouterGroup, appState *core.AppState) {
 			return
 		}
 
-		c.JSON(http.StatusCreated, gin.H{
-			"id":           channel.Id,
-			"title":        channel.Title,
-			"description":  channel.Description,
-			"thumbnailUrl": channel.ThumbnailUrl,
-		})
+		view := views.NewChannelView(channel)
+		c.JSON(http.StatusCreated, view)
 	})
 }
