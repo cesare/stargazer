@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"stargazer/internal/core"
-	. "stargazer/internal/values"
+	"stargazer/internal/values"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
@@ -30,7 +30,7 @@ func (finder *ChannelFinder) createService(ctx context.Context) (*youtube.Channe
 	return youtube.NewChannelsService(service), nil
 }
 
-func (finder *ChannelFinder) FindById(ctx context.Context, id ChannelId) (*youtube.Channel, error) {
+func (finder *ChannelFinder) FindById(ctx context.Context, id values.ChannelId) (*youtube.Channel, error) {
 	channelsService, err := finder.createService(ctx)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (finder *ChannelFinder) FindById(ctx context.Context, id ChannelId) (*youtu
 	return response.Items[0], nil
 }
 
-func (finder *ChannelFinder) FindByHandle(ctx context.Context, handle *Handle) (*youtube.Channel, error) {
+func (finder *ChannelFinder) FindByHandle(ctx context.Context, handle *values.Handle) (*youtube.Channel, error) {
 	channelsService, err := finder.createService(ctx)
 	if err != nil {
 		return nil, err

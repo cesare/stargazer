@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 	"stargazer/internal/core"
+
+	//nolint // conflicts standard errors
 	. "stargazer/internal/errors"
 	"stargazer/internal/handlers/channels"
 	"stargazer/internal/views"

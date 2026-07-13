@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"stargazer/internal/core"
-	. "stargazer/internal/values"
+	"stargazer/internal/values"
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
@@ -43,7 +43,7 @@ func (finder *VideoFinder) createVideosService(ctx context.Context) (*youtube.Vi
 	return youtube.NewVideosService(service), nil
 }
 
-func (finder *VideoFinder) ListUpcomingVideoIdsOnChannel(ctx context.Context, channelId ChannelId) ([]VideoId, error) {
+func (finder *VideoFinder) ListUpcomingVideoIdsOnChannel(ctx context.Context, channelId values.ChannelId) ([]values.VideoId, error) {
 	searchService, err := finder.createSearchService(ctx)
 	if err != nil {
 		return nil, err
@@ -55,16 +55,16 @@ func (finder *VideoFinder) ListUpcomingVideoIdsOnChannel(ctx context.Context, ch
 		return nil, fmt.Errorf("failed to list upcoming videos: %w", err)
 	}
 
-	var videoIds []VideoId
+	var videoIds []values.VideoId
 	for i := 0; i < len(response.Items); i++ {
 		item := response.Items[i]
-		videoIds = append(videoIds, VideoId(item.Id.VideoId))
+		videoIds = append(videoIds, values.VideoId(item.Id.VideoId))
 	}
 
 	return videoIds, nil
 }
 
-func (finder *VideoFinder) SearchVideos(ctx context.Context, videoIds []VideoId) ([]*youtube.Video, error) {
+func (finder *VideoFinder) SearchVideos(ctx context.Context, videoIds []values.VideoId) ([]*youtube.Video, error) {
 	ids := make([]string, len(videoIds))
 	for i, v := range videoIds {
 		ids[i] = fmt.Sprint(v)

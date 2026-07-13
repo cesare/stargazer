@@ -1,18 +1,18 @@
 package views
 
 import (
-	. "stargazer/internal/models"
-	. "stargazer/internal/values"
+	"stargazer/internal/models"
+	"stargazer/internal/values"
 )
 
 type ChannelView struct {
-	Id           ChannelId `json:"id"`
-	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	ThumbnailUrl string    `json:"thumbnailUrl"`
+	Id           values.ChannelId `json:"id"`
+	Title        string           `json:"title"`
+	Description  string           `json:"description"`
+	ThumbnailUrl string           `json:"thumbnailUrl"`
 }
 
-func NewChannelView(channel *Channel) *ChannelView {
+func NewChannelView(channel *models.Channel) *ChannelView {
 	return &ChannelView{
 		Id:           channel.Id,
 		Title:        channel.Title,

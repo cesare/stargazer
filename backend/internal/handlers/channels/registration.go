@@ -4,10 +4,9 @@ import (
 	"context"
 	"stargazer/internal/core"
 	"stargazer/internal/errors"
-	. "stargazer/internal/models"
+	"stargazer/internal/models"
 	"stargazer/internal/repositories"
 	"stargazer/internal/values"
-	. "stargazer/internal/values"
 	"stargazer/internal/ytclient"
 )
 
@@ -21,7 +20,7 @@ func NewRegistration(appState *core.AppState) *registration {
 	}
 }
 
-func (r *registration) Execute(ctx context.Context, url string) (*Channel, error) {
+func (r *registration) Execute(ctx context.Context, url string) (*models.Channel, error) {
 	handle, err := values.TryNewHandleFromUrl(url)
 	if err != nil {
 		return nil, errors.NewBadRequestError("failed to extract handle from URL %s: %w", url, err)
@@ -33,7 +32,7 @@ func (r *registration) Execute(ctx context.Context, url string) (*Channel, error
 		return nil, errors.NewBadGatewayError("failed to fetch Youtube channel: %w", err)
 	}
 
-	id := ChannelId(ch.Id)
+	id := values.ChannelId(ch.Id)
 	title := ch.Snippet.Title
 	description := ch.Snippet.Description
 	thumbnailUrl := ch.Snippet.Thumbnails.Default.Url
