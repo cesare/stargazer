@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"stargazer/internal/core"
+	"stargazer/internal/repositories"
 
 	//nolint // conflicts standard errors
 	. "stargazer/internal/errors"
@@ -44,5 +45,31 @@ func RegisterChannelsHandler(group *gin.RouterGroup, appState *core.AppState) {
 
 		view := views.NewChannelView(channel)
 		c.JSON(http.StatusCreated, view)
+	})
+
+	group.GET("", func(c *gin.Context) {
+		conn, err := appState.AcquireDatabaseConnection(c)
+		if err != nil {
+			slog.Error("failed to acquire database connection", "error", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		defer conn.Release()
+
+		repository := repositories.NewChannelRepository(c, conn.Conn())
+		channels, err := repository.List()
+		if err != nil {
+			slog.Error("failed to list channels", "error", err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		var channelViews []views.ChannelView
+		for _, v := range channels {
+			channelViews = append(channelViews, *views.NewChannelView(&v))
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"channels": channelViews,
+		})
 	})
 }
