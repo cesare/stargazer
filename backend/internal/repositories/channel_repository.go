@@ -107,3 +107,13 @@ func (repository *ChannelRepository) ListTargetChannelIds() ([]values.ChannelId,
 
 	return ids, nil
 }
+
+func (repository *ChannelRepository) Delete(id values.ChannelId) error {
+	statement := "delete from channels where id = $1"
+	_, err := repository.connection.Exec(repository.ctx, statement, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete channel (id=%s): %w", id, err)
+	}
+
+	return nil
+}
