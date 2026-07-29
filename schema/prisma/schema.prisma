@@ -18,5 +18,19 @@ model Channel {
   description String
   thumbnailUrl String @map(name: "thumbnail_url")
 
+  videos Video[]
+
   @@map("channels")
+}
+
+model Video {
+  id String @id
+  channelId String @map(name: "channel_id")
+  channel Channel @relation(fields: [channelId], references: [id])
+  title String
+  description String
+  thumbnailUrl String @map(name: "thumbnail_url")
+  startsAt DateTime @map(name: "starts_at")
+
+  @@map("videos")
 }
