@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/gin-contrib/cors v1.7.7
+	github.com/gin-contrib/cors v1.7.8
 	github.com/gin-contrib/sessions v1.1.1
 	github.com/gin-gonic/gin v1.12.0
 	github.com/jackc/pgx/v5 v5.10.0
