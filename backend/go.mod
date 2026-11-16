@@ -7,7 +7,7 @@ require (
 	github.com/gin-contrib/cors v1.7.11
 	github.com/gin-contrib/sessions v1.1.4
 	github.com/gin-gonic/gin v1.12.0
-	github.com/jackc/pgx/v5 v5.12.0
+	github.com/jackc/pgx/v5 v5.13.0
 	github.com/pelletier/go-toml/v2 v2.4.3
 	google.golang.org/api v0.312.0
 )
